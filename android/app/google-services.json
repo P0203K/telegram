@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "968243486355",
+    "project_id": "telegram-9e51e",
+    "storage_bucket": "telegram-9e51e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968243486355:android:ec0639d25bcc447ac17766",
+        "android_client_info": {
+          "package_name": "com.example.telegram"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuicKW66U7EaDMQCCCYkJOuuwmqO2QYbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
