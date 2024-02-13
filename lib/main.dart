@@ -1,4 +1,4 @@
-// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:new_flutter_clone/screen/login/phone_verify_screen.dart';
 import 'screen/login_screen.dart';
