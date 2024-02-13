@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 // import 'package:new_flutter_clone/screen/login/phone_verify_screen.dart';
 import 'screen/login_screen.dart';
 
-void main(){
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 

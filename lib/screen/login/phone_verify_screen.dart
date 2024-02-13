@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:telegram/screen/home.dart';
 
 class PhoneVerifyScreen extends StatefulWidget {
+  final String phoneNumber;
+
+  PhoneVerifyScreen({required this.phoneNumber});
+
   @override
   State<StatefulWidget> createState() => PhoneVerifyScreenState();
 }
 
 class PhoneVerifyScreenState extends State<PhoneVerifyScreen>{
   var phoneCt = TextEditingController();
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -16,21 +21,22 @@ class PhoneVerifyScreenState extends State<PhoneVerifyScreen>{
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
-        leading: TextButton(onPressed: (){
-          //Back
-          Navigator.pop(context);
-        },
+        leading: TextButton(
+          onPressed: (){
+            Navigator.pop(context);
+          },
           child: const Text('Back', style: TextStyle(fontWeight: FontWeight.bold),),
         ),
         actions: [
-          TextButton(onPressed: (){
-            //NEXT
-            Navigator.push(
+          TextButton(
+            onPressed: (){
+              Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        HomeScreen()));
-          },
+                  builder: (context) => HomeScreen(),
+                ),
+              );
+            },
             child: const Text("Next", style: TextStyle(fontWeight: FontWeight.bold), textDirection: TextDirection.ltr,),
           ),
         ],
@@ -45,7 +51,11 @@ class PhoneVerifyScreenState extends State<PhoneVerifyScreen>{
               const Spacer(),
               const Spacer(),
               Container(height: 30,),
-              const Text("+911234567890", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),textDirection: TextDirection.ltr,),
+              Text(
+                widget.phoneNumber,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                textDirection: TextDirection.ltr,
+              ),
               Container(height: 15,),
               const Text('We just sent you an SMS with the code.', textAlign: TextAlign.center, textDirection: TextDirection.ltr,),
               Container(height: 30,),
@@ -63,9 +73,10 @@ class PhoneVerifyScreenState extends State<PhoneVerifyScreen>{
                 ),
               ),
               Container(height: 50,),
-              TextButton(onPressed: (){},
-                child: const Text("+Haven't received the code?", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.blue),textDirection: TextDirection.ltr,),),
-
+              TextButton(
+                onPressed: (){},
+                child: const Text("+Haven't received the code?", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.blue),textDirection: TextDirection.ltr,),
+              ),
               const Spacer(),
             ],
           ),
