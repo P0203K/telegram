@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:telegram/screen/home.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -14,8 +13,7 @@ class ChatScreen extends StatelessWidget {
       body: Column(
         children: [
           ChatHeader(
-            profileImage: 'assets/profile_image.jpg',
-            profileName: 'John Doe',
+            profileName: 'Annabeth Chase',
             lastSeen: 'Last seen 5 minutes ago',
             onBackArrowPressed: () {
               Navigator.of(context).pop(); // Navigate back to previous screen
@@ -23,19 +21,49 @@ class ChatScreen extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 10, // Number of messages
+              itemCount: 12, // Number of messages
               itemBuilder: (context, index) {
-                // Simulating incoming and outgoing messages alternately
-                return index.isEven
-                    ? IncomingMessage(
-                  message: 'Hello $index',
-                  time: '10:00 AM',
-                )
-                    : OutgoingMessage(
-                  message: 'Hi $index',
-                  time: '10:01 AM',
-                  status: MessageStatus.sent,
-                );
+                // Simulating incoming, outgoing text, and image messages
+                if (index.isEven) {
+                  return IncomingMessage(
+                    message: 'Hello $index',
+                    time: '10:00 AM',
+                  );
+                } else if (index == 1) {
+                  // Send image message
+                  return OutgoingImageMessage(
+                    imagePath: 'assets/images/telegram_logo.png',
+                    time: '10:01 AM',
+                    status: MessageStatus.sent,
+                  );
+                } else if (index == 2) {
+                  // Replace with 'anything else?'
+                  return OutgoingMessage(
+                    message: 'anything else?',
+                    time: '10:02 AM',
+                    status: MessageStatus.sent,
+                  );
+                } else if (index == 3) {
+                  // Replace with 'nope'
+                  return OutgoingMessage(
+                    message: 'nope',
+                    time: '10:03 AM',
+                    status: MessageStatus.sent,
+                  );
+                } else if (index == 4) {
+                  // Replace with 'Thanks!'
+                  return OutgoingMessage(
+                    message: 'Thanks!',
+                    time: '10:04 AM',
+                    status: MessageStatus.sent,
+                  );
+                } else {
+                  return OutgoingMessage(
+                    message: 'Hi $index',
+                    time: '10:01 AM',
+                    status: MessageStatus.sent,
+                  );
+                }
               },
             ),
           ),
@@ -47,13 +75,13 @@ class ChatScreen extends StatelessWidget {
 }
 
 class ChatHeader extends StatelessWidget {
-  final String profileImage;
+  final String? profileImage;
   final String profileName;
   final String lastSeen;
   final VoidCallback? onBackArrowPressed;
 
   const ChatHeader({
-    required this.profileImage,
+    this.profileImage,
     required this.profileName,
     required this.lastSeen,
     this.onBackArrowPressed,
@@ -64,7 +92,7 @@ class ChatHeader extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.blue, // Set background color to blue
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
@@ -77,13 +105,18 @@ class ChatHeader extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, color: Colors.white), // Back arrow icon color set to white
             onPressed: onBackArrowPressed,
           ),
           SizedBox(width: 12.0),
           CircleAvatar(
             radius: 24.0,
-            backgroundImage: AssetImage(profileImage),
+            backgroundImage: profileImage != null
+                ? AssetImage(profileImage!)
+                : null, // Check if profile image is provided
+            child: profileImage == null
+                ? Text(profileName[0], style: TextStyle(color: Colors.white)) // Display first letter if profile image is not provided, set text color to white
+                : null,
           ),
           SizedBox(width: 12.0),
           Column(
@@ -94,6 +127,7 @@ class ChatHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white, // Set text color to white
                 ),
               ),
               SizedBox(height: 4.0),
@@ -101,20 +135,20 @@ class ChatHeader extends StatelessWidget {
                 lastSeen,
                 style: TextStyle(
                   fontSize: 12.0,
-                  color: Colors.grey,
+                  color: Colors.white, // Set text color to white
                 ),
               ),
             ],
           ),
           Spacer(),
           IconButton(
-            icon: Icon(Icons.call), // Call icon
+            icon: Icon(Icons.call, color: Colors.white), // Call icon color set to white
             onPressed: () {
               // Call functionality
             },
           ),
           IconButton(
-            icon: Icon(Icons.more_vert),
+            icon: Icon(Icons.more_vert, color: Colors.white), // Three dots icon color set to white
             onPressed: () {
               // More options functionality
             },
@@ -204,6 +238,64 @@ class OutgoingMessage extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 4.0),
+            if (status == MessageStatus.sent)
+              Icon(
+                Icons.done,
+                color: Colors.grey,
+                size: 16.0,
+              )
+            else if (status == MessageStatus.delivered)
+              Icon(
+                Icons.done_all,
+                color: Colors.grey,
+                size: 16.0,
+              )
+            else if (status == MessageStatus.read)
+                Icon(
+                  Icons.done_all,
+                  color: Colors.blue,
+                  size: 16.0,
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class OutgoingImageMessage extends StatelessWidget {
+  final String imagePath;
+  final String time;
+  final MessageStatus status;
+
+  const OutgoingImageMessage({
+    required this.imagePath,
+    required this.time,
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        margin: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Image.asset(imagePath, width: 150, height: 150), // Set width and height for the image
+            SizedBox(height: 4.0),
+            Text(
+              time,
+              style: TextStyle(
+                fontSize: 12.0,
+                color: Colors.grey,
+              ),
             ),
             SizedBox(height: 4.0),
             if (status == MessageStatus.sent)

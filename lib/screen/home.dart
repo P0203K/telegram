@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:telegram/screen/chat.dart';
 
-
-// void main() {
-//   runApp(TelegramApp());
-// }
+void main() {
+  runApp(TelegramApp());
+}
 
 class TelegramApp extends StatelessWidget {
   @override
@@ -24,10 +23,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Telegram'),
+        title: Text('Telegram', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue, // Set background color of app bar
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.search, color: Colors.white),
             onPressed: () {
               // Implement search functionality
             },
@@ -68,6 +68,13 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       body: ChatsList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Handle adding new chat
+        },
+        backgroundColor: Colors.blue,
+        child: Icon(Icons.edit),
+      ),
     );
   }
 }
@@ -78,49 +85,75 @@ class ChatsList extends StatelessWidget {
     // Simulated list of chats
     List<Chat> chats = [
       Chat(
-        name: 'John Doe',
+        name: 'Priya Khamkar',
         message: 'Hello there!',
         time: '10:00 AM',
         unreadCount: 2,
       ),
       Chat(
-        name: 'Jane Smith',
+        name: 'Gargi Angne',
         message: 'Hi!',
+        time: 'Yesterday',
+        unreadCount: 0,
+      ),
+      Chat(
+        name: 'Annabeth Chase',
+        message: 'Thanks!',
         time: 'Yesterday',
         unreadCount: 0,
       ),
     ];
 
-    return ListView.builder(
+    return ListView.separated(
       itemCount: chats.length,
+      separatorBuilder: (context, index) => Divider(), // Add horizontal divider between list tiles
       itemBuilder: (context, index) {
-        return ListTile(
-          leading: CircleAvatar(
-            child: Text(chats[index].name[0]), // Displaying first letter of name
-          ),
-          title: Text(chats[index].name),
-          subtitle: Text(chats[index].message),
-          trailing: chats[index].unreadCount > 0
-              ? CircleAvatar(
-            backgroundColor: Colors.blue,
-            radius: 10,
-            child: Text(
-              chats[index].unreadCount.toString(),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
+        return Row(
+          children: [
+            Expanded(
+              child: ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                leading: CircleAvatar(
+                  child: Text(chats[index].name[0]), // Displaying first letter of name
+                ),
+                title: Text(chats[index].name),
+                subtitle: Text(chats[index].message),
+                onTap: () {
+                  // Open chat screen for the selected chat
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(),
+                    ),
+                  );
+                },
               ),
             ),
-          )
-              : null,
-          onTap: () {
-            // Open chat screen for the selected chat
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ChatScreen()));
-          },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    chats[index].time, // Display timestamp
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  if (chats[index].unreadCount > 0)
+                    CircleAvatar(
+                      backgroundColor: Colors.blue,
+                      radius: 10,
+                      child: Text(
+                        chats[index].unreadCount.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
         );
       },
     );
