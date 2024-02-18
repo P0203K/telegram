@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:telegram/screen/h.dart';
 import 'package:telegram/screen/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PhoneVerifyScreen extends StatefulWidget {
   String verificationId;
@@ -53,16 +55,25 @@ class PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
 
                 // Sign in the user with the PhoneAuthCredential
 
-                UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential).then((value){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-                });
+                UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+                User? user = userCredential.user;
 
-                return credential;
+                if (user != null){
+                  // User signed in successfully, now you can create a new user profile
+                  // Here, you can add code to create a new user in your Firebase Firestore or Realtime Database
+                  await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+                    'phone': user.phoneNumber,
+                  });
+
+                  // Navigate to the home screen
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> HomePage()));
+                }else {
+                //   Handle the case where user is null
+                  print("Failed to sign in");
+                }
               } catch (ex) {
                 print(ex.toString());
               }
-
-
             },
             child: const Text(
               "Next",
