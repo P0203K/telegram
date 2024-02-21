@@ -1,125 +1,106 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+class ProfilePage extends StatefulWidget {
+  final String userId;
+
+  const ProfilePage({Key? key, required this.userId}) : super(key: key);
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+class _ProfilePageState extends State<ProfilePage> {
   late String _profileImageUrl = '';
   late String _username = '';
-  late String _bio = '';
+  late String _userStatus = '';
   late String _phoneNumber = '';
-  late bool _isOnline = false;
+  late String _bio = '';
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _loadUserData();
   }
 
-  Future<void> _fetchUserData() async {
-    try {
-      String userId = _auth.currentUser!.uid;
-      DocumentSnapshot userSnapshot = await _firestore.collection('users').doc(userId).get();
+  void _loadUserData() async {
+    DocumentSnapshot userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .get();
 
-      setState(() {
-        _profileImageUrl = userSnapshot['profileImageUrl'] ?? '';
-        _username = userSnapshot['username'] ?? '';
-        _bio = userSnapshot['bio'] ?? '';
-        _phoneNumber = userSnapshot['phone'] ?? '';
-        _isOnline = userSnapshot['isOnline'] ?? false;
-      });
-    } catch (error) {
-      print('Error fetching user data: $error');
-    }
-  }
-
-  Future<void> _logout() async {
-    try {
-      await _auth.signOut();
-      Navigator.pushReplacementNamed(context, '/login');
-    } catch (error) {
-      print('Error logging out: $error');
-    }
+    setState(() {
+      _profileImageUrl = userData['profileImageUrl'] ?? '';
+      _username = userData['username'] ?? '';
+      _userStatus = 'Online'; // You can replace this with dynamic data
+      _phoneNumber = userData['phone'] ?? '';
+      _bio = userData['bio'] ?? '';
+      _isLoading = false; // Set loading state to false when data is loaded
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
-        backgroundColor: Colors.blue,
+        title: Text('Profile'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              color: Colors.blue,
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: _profileImageUrl.isNotEmpty
-                        ? NetworkImage(_profileImageUrl)
-                        : null,
-                    backgroundColor: Colors.grey,
-                    child: _profileImageUrl.isEmpty
-                        ? Icon(Icons.account_circle, size: 100, color: Colors.white)
-                        : null,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    _username,
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    _isOnline ? 'Online' : 'Offline',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            TextButton(
-              onPressed: () {
-                // Implement Set Profile Photo functionality
-              },
-              child: Text('Set Profile Photo'),
-            ),
-            SizedBox(height: 16),
-            Text('Account Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ListTile(
-              title: Text('Phone number'),
-              subtitle: Text(_phoneNumber),
-            ),
-            ListTile(
-              title: Text('Username'),
-              subtitle: Text(_username),
-            ),
-            ListTile(
-              title: Text('Bio'),
-              subtitle: Text(_bio),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _logout,
-              child: Text('Logout'),
-            ),
-          ],
-        ),
+      body: _isLoading ? _buildLoadingIndicator() : _buildProfileDetails(),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildProfileDetails() {
+    return Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile Image
+          _buildProfileImage(),
+          SizedBox(height: 16),
+          // Username
+          Text(
+            'Username: $_username',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          // User Status
+          Text(
+            'User Status: $_userStatus',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 8),
+          // Phone Number
+          Text(
+            'Phone Number: $_phoneNumber',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 8),
+          // Bio
+          Text(
+            'Bio: $_bio',
+            style: TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileImage() {
+    return CircleAvatar(
+      backgroundColor: Colors.grey,
+      radius: 50,
+      child: Text(
+        _username.isNotEmpty ? _username[0].toUpperCase() : '',
+        style: TextStyle(fontSize: 40, color: Colors.white),
       ),
     );
   }
